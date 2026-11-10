@@ -34,7 +34,7 @@ export default function App() {
         <header className="border-b">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4">
             <div className="min-w-0">
-              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Quando compro casa</h1>
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">When I Buy a House</h1>
               <p className="text-sm text-muted-foreground">
                 Che casa posso comprare, con che mutuo e che rata?
               </p>
