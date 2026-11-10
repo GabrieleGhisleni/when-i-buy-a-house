@@ -45,7 +45,7 @@ export function combineLights(lights: Light[]): Light {
   return "green";
 }
 
-/** Computes the complete scenario for the given inputs (see PLAN.md "Modello di calcolo"). */
+/** Computes the complete scenario for the given inputs (see docs/PLAN.md "Modello di calcolo"). */
 export function computeScenario(inputs: HouseInputs): Scenario {
   const price = Math.max(0, finite(inputs.price));
   const capital = finite(inputs.capital);

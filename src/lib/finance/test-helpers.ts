@@ -2,7 +2,7 @@ import { DEFAULT_INPUTS } from "./presets";
 import type { HouseInputs } from "./types";
 
 /**
- * Control scenario from PLAN.md "Valori di controllo". The income is pinned to
+ * Control scenario from docs/PLAN.md "Valori di controllo". The income is pinned to
  * 3.000 € income and 20.000 € furniture and works (the plan's values), so the UI
  * defaults can change without moving the checks.
  */

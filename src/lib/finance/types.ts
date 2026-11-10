@@ -1,5 +1,5 @@
 // Shared contract between the finance engine (src/lib/finance) and the UI/state layer.
-// Owned by the orchestrator: change only with a note in PROGRESS.md.
+// Owned by the orchestrator: change only with a note in docs/PROGRESS.md.
 
 export type Country = "IT" | "ES";
 

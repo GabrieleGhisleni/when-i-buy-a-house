@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeScenario } from "./scenario";
 import { controlInputs } from "./test-helpers";
 
-describe("computeScenario: control values (PLAN.md)", () => {
+describe("computeScenario: control values (docs/PLAN.md)", () => {
   const cases = [
     { price: 200_000, years: 10, loan: 97_000, rata: 959, interest: 18_100 },
     { price: 200_000, years: 30, loan: 97_000, rata: 436, interest: 59_800 },
