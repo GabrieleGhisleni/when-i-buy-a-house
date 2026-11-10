@@ -10,7 +10,7 @@ export const DEFAULT_INPUTS: HouseInputs = {
   capital: 150_000,
   monthlyIncome: 5_000,
   price: 200_000,
-  furnitureAndWorks: 20_000,
+  furnitureAndWorks: 0,
   emergencyFund: 15_000,
   ...COUNTRY_PRESETS.IT,
   years: 25,

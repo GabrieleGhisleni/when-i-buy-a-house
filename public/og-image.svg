@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0f2742"/>
+  <rect x="80" y="110" width="1040" height="6" rx="3" fill="#38bdf8"/>
+  <text x="80" y="250" font-size="100" fill="#f8fafc">When I Buy a House</text>
+  <text x="80" y="330" font-size="40" fill="#cbd5e1">Which house can I buy with my capital?</text>
+  <text x="80" y="382" font-size="40" fill="#cbd5e1">Mortgage, monthly payment and total interest.</text>
+  <rect x="80" y="450" width="250" height="64" rx="32" fill="#10b981"/>
+  <text x="205" y="493" font-size="30" text-anchor="middle" fill="#052e1b">Feasibility</text>
+  <rect x="350" y="450" width="250" height="64" rx="32" fill="#38bdf8"/>
+  <text x="475" y="493" font-size="30" text-anchor="middle" fill="#082f49">Mortgage</text>
+  <rect x="620" y="450" width="250" height="64" rx="32" fill="#f59e0b"/>
+  <text x="745" y="493" font-size="30" text-anchor="middle" fill="#451a03">Interest</text>
+  <text x="80" y="572" font-size="26" fill="#94a3b8">Personal dashboard · Italy and Spain</text>
+</svg>
