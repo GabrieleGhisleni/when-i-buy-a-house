@@ -8,7 +8,7 @@ export const COUNTRY_PRESETS: Record<Country, CountryPreset> = {
 export const DEFAULT_INPUTS: HouseInputs = {
   country: "IT",
   capital: 150_000,
-  monthlyIncome: 3_000,
+  monthlyIncome: 5_000,
   price: 200_000,
   furnitureAndWorks: 20_000,
   emergencyFund: 15_000,

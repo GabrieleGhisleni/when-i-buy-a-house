@@ -74,30 +74,6 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <Field
-          label="Paese"
-          htmlFor="country"
-          info={
-            <>
-              <p>
-                Imposta i preset di costi di acquisto, LTV, rata/reddito e tasso. Ogni valore resta
-                modificabile.
-              </p>
-              <p>Disponibili: Italia e Spagna (usato, senza dettaglio regionale).</p>
-            </>
-          }
-        >
-          <Select value={inputs.country} onValueChange={(v) => setCountry(v as Country)}>
-            <SelectTrigger id="country" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="IT">Italia</SelectItem>
-              <SelectItem value="ES">Spagna</SelectItem>
-            </SelectContent>
-          </Select>
-        </Field>
-
-        <Field
           label="Capitale di partenza"
           htmlFor="capital"
           info={
@@ -171,6 +147,104 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             suffix="€"
             onChange={(v) => update({ price: v ?? 0 })}
           />
+        </Field>
+
+        <Field
+          label="Anticipo"
+          htmlFor="down"
+          info={
+            <>
+              <p>
+                Quanto versi subito. Va dal minimo (prezzo × (1 − LTV)) al massimo disponibile
+                (capitale − costi − arredo − fondo, al massimo il prezzo).
+              </p>
+              <p>
+                Mutuo = prezzo − anticipo. Un anticipo più alto abbassa rata e interessi ma lascia
+                meno liquidità.
+              </p>
+            </>
+          }
+          extra={
+            isMax && scenario.capitalSufficient ? <Badge variant="secondary">Massimo</Badge> : null
+          }
+        >
+          <SliderField
+            id="down"
+            value={scenario.downPayment}
+            min={dpMin}
+            max={dpMax}
+            step={500}
+            suffix="€"
+            aria-label="Anticipo"
+            disabled={!scenario.capitalSufficient}
+            onChange={(v) =>
+              update({ downPayment: v >= dpMax ? { mode: "max" } : { mode: "custom", value: v } })
+            }
+            onSliderMax={() => update({ downPayment: { mode: "max" } })}
+          >
+            {scenario.capitalSufficient ? (
+              <p className="text-xs text-muted-foreground">
+                Tra {formatEur(scenario.minDownPayment)} ({formatPct(1 - inputs.maxLtv, 0)} del
+                prezzo) e {formatEur(scenario.maxDownPayment)}.
+              </p>
+            ) : (
+              <p className="text-xs text-destructive" role="status">
+                Capitale insufficiente: calcolato con l&apos;anticipo minimo (
+                {formatEur(scenario.minDownPayment)}).
+              </p>
+            )}
+          </SliderField>
+        </Field>
+
+        <Field
+          label="Durata mutuo"
+          htmlFor="years"
+          info={
+            <>
+              <p>
+                Anni di rimborso, da 5 a 40. Più è lunga, più la rata scende e più gli interessi
+                totali salgono.
+              </p>
+              <p>Tipico: 20–30 anni.</p>
+            </>
+          }
+        >
+          <SliderField
+            id="years"
+            value={inputs.years}
+            min={5}
+            max={40}
+            step={1}
+            suffix="anni"
+            aria-label="Durata mutuo"
+            onChange={(v) => update({ years: Math.round(v) })}
+          />
+        </Field>
+
+        <hr className="border-border" />
+
+        <Field
+          label="Paese"
+          htmlFor="country"
+          info={
+            <>
+              <p>
+                Imposta i preset di costi di acquisto, LTV, rata/reddito e tasso. Ogni valore resta
+                modificabile.
+              </p>
+              <p>Disponibili: Italia e Spagna (usato, senza dettaglio regionale).</p>
+            </>
+          }
+        >
+          <Select value={inputs.country} onValueChange={(v) => setCountry(v as Country)}>
+            <SelectTrigger id="country" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="IT">Italia</SelectItem>
+              <SelectItem value="ES">Spagna</SelectItem>
+            </SelectContent>
+          </Select>
         </Field>
 
         <Field
@@ -355,78 +429,6 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             suffix="%"
             onChange={(v) => update({ annualRate: v ?? 0 })}
           />
-        </Field>
-
-        <Field
-          label="Durata mutuo"
-          htmlFor="years"
-          info={
-            <>
-              <p>
-                Anni di rimborso, da 5 a 40. Più è lunga, più la rata scende e più gli interessi
-                totali salgono.
-              </p>
-              <p>Tipico: 20–30 anni.</p>
-            </>
-          }
-        >
-          <SliderField
-            id="years"
-            value={inputs.years}
-            min={5}
-            max={40}
-            step={1}
-            suffix="anni"
-            aria-label="Durata mutuo"
-            onChange={(v) => update({ years: Math.round(v) })}
-          />
-        </Field>
-
-        <Field
-          label="Anticipo"
-          htmlFor="down"
-          info={
-            <>
-              <p>
-                Quanto versi subito. Va dal minimo (prezzo × (1 − LTV)) al massimo disponibile
-                (capitale − costi − arredo − fondo, al massimo il prezzo).
-              </p>
-              <p>
-                Mutuo = prezzo − anticipo. Un anticipo più alto abbassa rata e interessi ma lascia
-                meno liquidità.
-              </p>
-            </>
-          }
-          extra={
-            isMax && scenario.capitalSufficient ? <Badge variant="secondary">Massimo</Badge> : null
-          }
-        >
-          <SliderField
-            id="down"
-            value={scenario.downPayment}
-            min={dpMin}
-            max={dpMax}
-            step={500}
-            suffix="€"
-            aria-label="Anticipo"
-            disabled={!scenario.capitalSufficient}
-            onChange={(v) =>
-              update({ downPayment: v >= dpMax ? { mode: "max" } : { mode: "custom", value: v } })
-            }
-            onSliderMax={() => update({ downPayment: { mode: "max" } })}
-          >
-            {scenario.capitalSufficient ? (
-              <p className="text-xs text-muted-foreground">
-                Tra {formatEur(scenario.minDownPayment)} ({formatPct(1 - inputs.maxLtv, 0)} del
-                prezzo) e {formatEur(scenario.maxDownPayment)}.
-              </p>
-            ) : (
-              <p className="text-xs text-destructive" role="status">
-                Capitale insufficiente: calcolato con l&apos;anticipo minimo (
-                {formatEur(scenario.minDownPayment)}).
-              </p>
-            )}
-          </SliderField>
         </Field>
 
         <div className="flex flex-col gap-2 border-t pt-4">
