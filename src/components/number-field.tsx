@@ -134,9 +134,15 @@ export function NumberField({
   );
 }
 
+/** Decimal places of a step, e.g. 0.0005 -> 4, 1000 -> 0. */
+function decimalsOf(step: number): number {
+  const [, frac = ""] = String(step).split(".");
+  return frac.length;
+}
+
 export interface SliderFieldProps extends Omit<NumberFieldProps, "value" | "onChange"> {
-  value: number;
-  onChange: (value: number) => void;
+  value: number | null;
+  onChange: (value: number | null) => void;
   /** Slider range in model units. Defaults to min/max. */
   sliderMin?: number;
   sliderMax?: number;
@@ -163,18 +169,20 @@ export function SliderField({
   // the last position is then reachable and its (clamped) value equals hi exactly.
   const steps = hi > lo ? Math.ceil((hi - lo) / step - 1e-9) : 0;
   const trackMax = lo + steps * step;
+  const digits = decimalsOf(step);
   return (
     <div className="space-y-2">
-      <NumberField {...field} value={value} onChange={(v) => v !== null && onChange(v)} />
+      <NumberField {...field} value={value} onChange={onChange} />
       <Slider
         min={lo}
         max={Math.max(trackMax, lo)}
         step={step}
         disabled={field.disabled || hi <= lo}
-        value={[clamp(value, lo, hi)]}
+        value={[clamp(value ?? lo, lo, hi)]}
         aria-label={field["aria-label"]}
         onValueChange={([raw]) => {
-          const v = Math.min(raw, hi);
+          // toFixed strips the float noise accumulated by the step arithmetic.
+          const v = Number(Math.min(raw, hi).toFixed(digits));
           if (v >= hi && onSliderMax) onSliderMax();
           else onChange(v);
         }}

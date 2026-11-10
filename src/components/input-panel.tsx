@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from "react";
-import { Download, RotateCcw, Upload } from "lucide-react";
+import { Download, PanelLeftClose, PanelLeftOpen, RotateCcw, Upload } from "lucide-react";
 import { InfoPopover } from "@/components/info-popover";
-import { NumberField, SliderField } from "@/components/number-field";
+import { SliderField } from "@/components/number-field";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,8 @@ import { formatEur, formatPct } from "@/lib/format";
 interface InputPanelProps {
   api: HouseInputsApi;
   scenario: Scenario;
+  open: boolean;
+  onToggle: () => void;
 }
 
 function Field({
@@ -51,10 +53,30 @@ const SOURCES_NOTE = (
   <p className="italic">Fonti in gran parte commerciali o di comparazione: valori indicativi.</p>
 );
 
-export function InputPanel({ api, scenario }: InputPanelProps) {
+export function InputPanel({ api, scenario, open, onToggle }: InputPanelProps) {
   const { inputs, update, setCountry, resetCountryPreset, importFromFile, exportToFile } = api;
   const fileRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
+
+  if (!open) {
+    return (
+      <Card className="gap-0 p-2 lg:p-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          aria-label="Mostra i tuoi dati"
+          aria-expanded={false}
+          className="mx-auto"
+        >
+          <PanelLeftOpen />
+        </Button>
+        <span className="mt-1 text-center text-sm font-medium lg:mt-3 lg:[writing-mode:vertical-rl]">
+          I tuoi dati
+        </span>
+      </Card>
+    );
+  }
 
   const isMax = inputs.downPayment.mode === "max";
   const dpMin = Math.round(scenario.minDownPayment);
@@ -69,8 +91,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex-row items-center justify-between gap-2">
         <CardTitle>I tuoi dati</CardTitle>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          aria-label="Nascondi i tuoi dati"
+          aria-expanded={true}
+        >
+          <PanelLeftClose />
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         <Field
@@ -86,12 +117,15 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="capital"
             value={inputs.capital}
             min={0}
             max={1e10}
+            sliderMax={300_000}
+            step={1000}
             suffix="€"
+            aria-label="Capitale di partenza"
             onChange={(v) => update({ capital: v ?? 0 })}
           />
         </Field>
@@ -114,14 +148,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="income"
             value={inputs.monthlyIncome}
             nullable
             min={0}
             max={1e10}
+            sliderMax={10_000}
+            step={100}
             suffix="€"
             placeholder="Non indicato"
+            aria-label="Reddito netto mensile"
             onChange={(v) => update({ monthlyIncome: v })}
           />
         </Field>
@@ -139,12 +176,15 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="price"
             value={inputs.price}
             min={0}
             max={1e10}
+            sliderMax={1_000_000}
+            step={5000}
             suffix="€"
+            aria-label="Prezzo casa"
             onChange={(v) => update({ price: v ?? 0 })}
           />
         </Field>
@@ -163,12 +203,15 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="works"
             value={inputs.furnitureAndWorks}
             min={0}
             max={1e10}
+            sliderMax={150_000}
+            step={1000}
             suffix="€"
+            aria-label="Arredo + lavori"
             onChange={(v) => update({ furnitureAndWorks: v ?? 0 })}
           />
         </Field>
@@ -187,12 +230,15 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="emergency"
             value={inputs.emergencyFund}
             min={0}
             max={1e10}
+            sliderMax={50_000}
+            step={500}
             suffix="€"
+            aria-label="Fondo emergenza"
             onChange={(v) => update({ emergencyFund: v ?? 0 })}
           />
         </Field>
@@ -218,7 +264,7 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             step={1}
             suffix="anni"
             aria-label="Durata mutuo"
-            onChange={(v) => update({ years: Math.round(v) })}
+            onChange={(v) => v !== null && update({ years: Math.round(v) })}
           />
         </Field>
 
@@ -281,13 +327,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="costs"
             value={inputs.purchaseCostRate}
             percent
             min={0}
             max={1}
+            sliderMax={0.15}
+            step={0.001}
+            decimals={1}
             suffix="%"
+            aria-label="Costi di acquisto"
             onChange={(v) => update({ purchaseCostRate: v ?? 0 })}
           />
         </Field>
@@ -308,13 +358,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="ltv"
             value={inputs.maxLtv}
             percent
             min={0}
             max={1}
+            sliderMin={0.5}
+            sliderMax={1}
+            step={0.005}
             suffix="%"
+            aria-label="LTV massimo"
             onChange={(v) => update({ maxLtv: v ?? 0 })}
           />
         </Field>
@@ -340,13 +394,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="dti"
             value={inputs.maxInstallmentToIncome}
             percent
             min={0}
             max={1}
+            sliderMin={0.2}
+            sliderMax={0.45}
+            step={0.005}
             suffix="%"
+            aria-label="Rata/reddito massima"
             onChange={(v) => update({ maxInstallmentToIncome: v ?? 0 })}
           />
         </Field>
@@ -378,14 +436,17 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             </>
           }
         >
-          <NumberField
+          <SliderField
             id="rate"
             value={inputs.annualRate}
             percent
             decimals={2}
             min={0}
             max={1}
+            sliderMax={0.06}
+            step={0.0005}
             suffix="%"
+            aria-label="Tasso fisso annuo"
             onChange={(v) => update({ annualRate: v ?? 0 })}
           />
         </Field>
@@ -419,6 +480,7 @@ export function InputPanel({ api, scenario }: InputPanelProps) {
             aria-label="Anticipo"
             disabled={!scenario.capitalSufficient}
             onChange={(v) =>
+              v !== null &&
               update({ downPayment: v >= dpMax ? { mode: "max" } : { mode: "custom", value: v } })
             }
             onSliderMax={() => update({ downPayment: { mode: "max" } })}

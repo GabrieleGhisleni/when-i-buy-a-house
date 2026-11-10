@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { InputPanel } from "@/components/input-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +27,7 @@ export default function App() {
   const { inputs } = api;
   const scenario = useMemo(() => computeScenario(inputs), [inputs]);
   const viewProps: ViewProps = { inputs, scenario, update: api.update };
+  const [panelOpen, setPanelOpen] = useState(true);
 
   return (
     <TooltipProvider>
@@ -43,9 +44,18 @@ export default function App() {
           </div>
         </header>
 
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div
+          className={`mx-auto grid max-w-7xl gap-6 px-4 py-6 ${
+            panelOpen ? "lg:grid-cols-[360px_minmax(0,1fr)]" : "lg:grid-cols-[auto_minmax(0,1fr)]"
+          }`}
+        >
           <aside className="lg:sticky lg:top-4 lg:max-h-[calc(100svh-2rem)] lg:self-start lg:overflow-y-auto">
-            <InputPanel api={api} scenario={scenario} />
+            <InputPanel
+              api={api}
+              scenario={scenario}
+              open={panelOpen}
+              onToggle={() => setPanelOpen((o) => !o)}
+            />
           </aside>
 
           <main className="min-w-0 space-y-6">
