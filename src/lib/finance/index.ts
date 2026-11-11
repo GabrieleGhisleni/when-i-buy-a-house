@@ -6,3 +6,4 @@ export * from "./amortization";
 export * from "./max-price";
 export * from "./matrix";
 export * from "./sweep";
+export * from "./rate-matrix";
