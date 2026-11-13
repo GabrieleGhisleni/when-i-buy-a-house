@@ -1,9 +1,32 @@
 import { useMemo, useState, type ReactNode } from "react";
+
+/** Popover che si apre al passaggio del mouse e al tocco, e resta aperto finché non lo si chiude. */
+function CellPopover({ trigger, children }: { trigger: ReactNode; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover open={open} onOpenChange={(o) => !o && setOpen(false)}>
+      <PopoverTrigger
+        asChild
+        onPointerEnter={(e) => e.pointerType === "mouse" && setOpen(true)}
+        onPointerLeave={(e) => e.pointerType === "mouse" && setOpen(false)}
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen((o) => !o);
+        }}
+      >
+        {trigger}
+      </PopoverTrigger>
+      <PopoverContent side="top" className="w-72 p-3" onOpenAutoFocus={(e) => e.preventDefault()}>
+        {children}
+      </PopoverContent>
+    </Popover>
+  );
+}
 import { SliderField } from "@/components/number-field";
 import { InfoPopover } from "@/components/info-popover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { installment, installmentLight } from "@/lib/finance";
 import type { Light } from "@/lib/finance";
 import { formatEur, formatPct } from "@/lib/format";
@@ -208,8 +231,8 @@ export function RatePage() {
                       const totalInterest = totalRepaid - loan;
                       return (
                         <td key={y} className="p-0">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
+                          <CellPopover
+                            trigger={
                               <div
                                 tabIndex={0}
                                 aria-label={`${formatEur(loan)} in ${y} anni: rata ${formatEur(monthly)}, ${LIGHT_LABELS[light]}`}
@@ -220,29 +243,28 @@ export function RatePage() {
                               >
                                 {formatEur(monthly)}
                               </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="w-72 p-3 text-sm">
-                              <div className="space-y-2">
-                                <p className="border-b border-background/20 pb-2 text-base font-semibold">
-                                  Mutuo {formatEur(loan)} · {y} anni a {formatPct(rate, 2)}
-                                </p>
-                                <dl className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1.5 tabular-nums">
-                                  <dt className="text-left">Rata mensile</dt>
-                                  <dd className="text-right font-semibold">{formatEur(monthly)}</dd>
-                                  <dt className="text-left">Interessi pagati alla banca</dt>
-                                  <dd className="text-right font-semibold">
-                                    {formatEur(totalInterest)}
-                                  </dd>
-                                  <dt className="text-left">Totale restituito</dt>
-                                  <dd className="text-right">{formatEur(totalRepaid)}</dd>
-                                  <dt className="text-left">Rata / salario</dt>
-                                  <dd className="text-right">
-                                    {salary > 0 ? formatPct(monthly / salary, 1) : "n/d"}
-                                  </dd>
-                                </dl>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
+                            }
+                          >
+                            <div className="space-y-2">
+                              <p className="border-b border-border pb-2 text-base font-semibold">
+                                Mutuo {formatEur(loan)} · {y} anni a {formatPct(rate, 2)}
+                              </p>
+                              <dl className="grid grid-cols-[1fr_auto] gap-x-6 gap-y-1.5 tabular-nums">
+                                <dt className="text-left">Rata mensile</dt>
+                                <dd className="text-right font-semibold">{formatEur(monthly)}</dd>
+                                <dt className="text-left">Interessi pagati alla banca</dt>
+                                <dd className="text-right font-semibold">
+                                  {formatEur(totalInterest)}
+                                </dd>
+                                <dt className="text-left">Totale restituito</dt>
+                                <dd className="text-right">{formatEur(totalRepaid)}</dd>
+                                <dt className="text-left">Rata / salario</dt>
+                                <dd className="text-right">
+                                  {salary > 0 ? formatPct(monthly / salary, 1) : "n/d"}
+                                </dd>
+                              </dl>
+                            </div>
+                          </CellPopover>
                         </td>
                       );
                     })}
